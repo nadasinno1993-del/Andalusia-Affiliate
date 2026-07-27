@@ -508,3 +508,206 @@ Since this app serves affiliated doctors of the same Andalusia Hospitals Group t
 ---
 
 *This plan is intentionally scoped to a Doctor-only MVP, matching your note that "all actions are initiated by the doctor" with "no visibility for other roles." Hospital-side staff (pricing, coordination, finance) are assumed to continue using the existing internal admin/HMIS system, with this app writing into that same backend data layer rather than a parallel one.*
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>أندلسية أفلييت - لوحة التحكم</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+  
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; }
+    .card-hover { transition: all 0.3s; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+  <!-- SIDEBAR -->
+  <div class="flex h-screen">
+    <div class="w-72 bg-white border-l shadow-xl p-6">
+      <div class="flex items-center gap-3 mb-10">
+        <img src="https://via.placeholder.com/48" class="w-12 h-12 rounded-xl" alt="Andalusia"/>
+        <div>
+          <h1 class="text-2xl font-bold text-blue-700">أندلسية</h1>
+          <p class="text-xs text-gray-500 -mt-1">برنامج الإحالة</p>
+        </div>
+      </div>
+      
+      <!-- Navigation with comments -->
+      <nav class="space-y-2">
+        <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-2xl font-medium">
+          <i class="fas fa-home"></i>
+          <span>الرئيسية</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 rounded-2xl text-gray-700">
+          <i class="fas fa-users"></i>
+          <span>إحالاتي</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 rounded-2xl text-gray-700">
+          <i class="fas fa-money-bill-wave"></i>
+          <span>الأرباح</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 rounded-2xl text-gray-700">
+          <i class="fas fa-chart-bar"></i>
+          <span>التقارير</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 rounded-2xl text-gray-700">
+          <i class="fas fa-link"></i>
+          <span>رابط الإحالة</span>
+        </a>
+      </nav>
+      
+      <div class="mt-auto pt-8 border-t">
+        <div class="bg-blue-50 rounded-3xl p-5 text-center">
+          <p class="text-sm text-blue-600 font-medium">رصيدك الحالي</p>
+          <p class="text-4xl font-bold text-blue-700 mt-2">٢٤,٥٦٠ ج.م</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 p-8 overflow-auto">
+      <h2 class="text-3xl font-bold text-gray-800 mb-8">مرحباً بك في لوحة التحكم 👋</h2>
+      
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-3xl card-hover border border-gray-100">
+          <p class="text-gray-500 text-sm">إجمالي الإحالات</p>
+          <p class="text-4xl font-bold text-gray-800 mt-3">١٨٤</p>
+          <p class="text-green-500 text-sm mt-4 flex items-center gap-1">
+            <i class="fas fa-arrow-trend-up"></i> +١٢ هذا الشهر
+          </p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-3xl card-hover border border-gray-100">
+          <p class="text-gray-500 text-sm">الأرباح هذا الشهر</p>
+          <p class="text-4xl font-bold text-emerald-600 mt-3">٨,٩٥٠ ج.م</p>
+          <p class="text-green-500 text-sm mt-4">+٢٣٪ عن الشهر الماضي</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-3xl card-hover border border-gray-100">
+          <p class="text-gray-500 text-sm">معدل التحويل</p>
+          <p class="text-4xl font-bold text-amber-600 mt-3">٦٨٪</p>
+          <p class="text-gray-500 text-sm mt-4">من الإحالات اللي تحولت لزيارات</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-3xl card-hover border border-gray-100">
+          <p class="text-gray-500 text-sm">رصيد قابل للسحب</p>
+          <p class="text-4xl font-bold text-purple-600 mt-3">١٤,٦١٠ ج.م</p>
+          <button onclick="alert('سيتم تحويل الرصيد قريباً')" 
+                  class="mt-4 text-sm bg-purple-600 text-white px-5 py-2 rounded-2xl hover:bg-purple-700">
+            سحب الآن
+          </button>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="bg-white rounded-3xl p-8 mb-10">
+        <h3 class="font-semibold mb-6">تطور الأرباح (آخر ٦ أشهر)</h3>
+        <canvas id="earningsChart" height="100"></canvas>
+      </div>
+
+      <!-- Referrals Table -->
+      <div class="bg-white rounded-3xl p-8">
+        <h3 class="font-semibold mb-6">آخر الإحالات</h3>
+        <table class="w-full">
+          <thead>
+            <tr class="border-b text-gray-500 text-sm">
+              <th class="pb-4 text-right">اسم المريض</th>
+              <th class="pb-4 text-right">التاريخ</th>
+              <th class="pb-4 text-right">الخدمة</th>
+              <th class="pb-4 text-right">الحالة</th>
+              <th class="pb-4 text-right">العمولة</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-700" id="referralsTable">
+            <!-- Populated by JS below -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Referral Link Section -->
+      <div class="mt-10 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-3xl p-8">
+        <h3 class="font-bold text-xl mb-3">رابط الإحالة الخاص بك</h3>
+        <div class="bg-white/20 backdrop-blur rounded-2xl p-4 flex items-center gap-3">
+          <input id="refLink" value="https://andalusiaegypt.com/ref/dr-ahmed-2025" 
+                 class="bg-transparent flex-1 outline-none text-white placeholder:text-white/70" readonly/>
+          <button onclick="copyLink()" 
+                  class="bg-white text-blue-700 px-6 py-2.5 rounded-xl font-medium hover:bg-gray-100">
+            نسخ
+          </button>
+        </div>
+        <p class="text-xs text-white/70 mt-4">كل مريض يسجل بالرابط ده هيجيب لك عمولة</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== INITIALIZATION ====================
+    // تهيئة الـ Chart.js
+    const ctx = document.getElementById('earningsChart');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+        datasets: [{
+          label: 'الأرباح (جنيه)',
+          data: [4200, 6800, 5200, 9100, 12400, 8950],
+          borderColor: '#1e40af',
+          tension: 0.4,
+          borderWidth: 3,
+          pointRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    // ==================== SAMPLE DATA ====================
+    // بيانات تجريبية - هنا هتحط البيانات اللي جاية من الـ Backend
+    const referrals = [
+      { name: "محمد علي", date: "2025-07-20", service: "تحاليل دم", status: "مكتمل", commission: "٤٥٠ ج.م" },
+      { name: "سارة أحمد", date: "2025-07-19", service: "أشعة مقطعية", status: "معلق", commission: "١٢٠٠ ج.م" },
+      { name: "خالد حسن", date: "2025-07-18", service: "تحاليل هرمونات", status: "مكتمل", commission: "٣٢٠ ج.م" }
+    ];
+
+    // Populate table
+    const tableBody = document.getElementById('referralsTable');
+    referrals.forEach(r => {
+      const row = document.createElement('tr');
+      row.className = "border-b last:border-0 hover:bg-gray-50";
+      row.innerHTML = `
+        <td class="py-5">${r.name}</td>
+        <td class="py-5 text-gray-500">${r.date}</td>
+        <td class="py-5">${r.service}</td>
+        <td class="py-5">
+          <span class="px-4 py-1 rounded-3xl text-xs ${r.status === 'مكتمل' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+            ${r.status}
+          </span>
+        </td>
+        <td class="py-5 font-medium text-emerald-600">${r.commission}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    // ==================== UTILITY FUNCTIONS ====================
+    function copyLink() {
+      const link = document.getElementById('refLink');
+      link.select();
+      document.execCommand('copy');
+      alert('✅ تم نسخ الرابط بنجاح!');
+    }
+
+    // Tailwind script already loaded via CDN
+    console.log('%c✅ لوحة أندلسية أفلييت جاهزة للدراسة والتعديل', 'color:#1e40af; font-size:14px; font-weight:bold');
+  </script>
+</body>
+</html>
